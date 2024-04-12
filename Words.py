@@ -17,7 +17,22 @@ def load_data(filename):
     try:
         with open(filename, 'r') as file:
             data = [line.strip().split(',') for line in file.readlines()]
-        return {date: int(word_count) for date, word_count in data}
+        data_dict = {date: int(word_count) for date, word_count in data}
+        
+        # Check for missing entries for previous days and populate them with the previous day's word count
+        current_date = datetime.now()
+        while True:
+            current_date_str = current_date.strftime("%d-%m-%Y")
+            if current_date_str not in data_dict:
+                previous_date = current_date - timedelta(days=1)
+                previous_date_str = previous_date.strftime("%d-%m-%Y")
+                if previous_date_str in data_dict:
+                    data_dict[current_date_str] = data_dict[previous_date_str]
+            if current_date_str == "01-04-2024":  # Stop when reaching April 1st
+                break
+            current_date -= timedelta(days=1)
+
+        return data_dict
     except FileNotFoundError:
         return {}
 
