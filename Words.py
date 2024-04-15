@@ -18,19 +18,26 @@ def load_data(filename):
         with open(filename, 'r') as file:
             data = [line.strip().split(',') for line in file.readlines()]
         data_dict = {date: int(word_count) for date, word_count in data}
-        
-        # Check for missing entries for previous days and populate them with the previous day's word count
+
+        # Check if today's data is missing
         current_date = datetime.now()
-        while True:
-            current_date_str = current_date.strftime("%d-%m-%Y")
-            if current_date_str not in data_dict:
+        current_date_str = current_date.strftime("%d-%m-%Y")
+        if current_date_str not in data_dict:
+            # Get the data for the previous day
+            previous_date = current_date - timedelta(days=1)
+            previous_date_str = previous_date.strftime("%d-%m-%Y")
+            if previous_date_str in data_dict:
+                # If data exists for the previous day, use it for today
+                data_dict[current_date_str] = data_dict[previous_date_str]
+            else:
+                # If no data exists for the previous day, find the last available previous day's data
                 previous_date = current_date - timedelta(days=1)
-                previous_date_str = previous_date.strftime("%d-%m-%Y")
-                if previous_date_str in data_dict:
-                    data_dict[current_date_str] = data_dict[previous_date_str]
-            if current_date_str == "01-04-2024":  # Stop when reaching April 1st
-                break
-            current_date -= timedelta(days=1)
+                while previous_date.strftime("%d-%m-%Y") not in data_dict:
+                    previous_date -= timedelta(days=1)
+                data_dict[current_date_str] = data_dict[previous_date.strftime("%d-%m-%Y")]
+                # Write the missing day's data to the file
+                with open(filename, 'a') as file:
+                    file.write(f"{current_date_str},{data_dict[current_date_str]}\n")
 
         return data_dict
     except FileNotFoundError:
