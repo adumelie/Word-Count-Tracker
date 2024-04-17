@@ -128,9 +128,9 @@ def plot_word_count(data):
 
     # Add label for the difference
     if difference > 0:
-        plt.text(0.05, 0.85, f'Above expected by: {difference}', fontsize=12, color='green', transform=plt.gcf().transFigure, verticalalignment='top', ha='left')
+        plt.text(0.05, 0.85, f'Above expected average by: {difference}', fontsize=12, color='green', transform=plt.gcf().transFigure, verticalalignment='top', ha='left')
     elif difference < 0:
-        plt.text(0.05, 0.85, f'Below expected by: {abs(difference)}', fontsize=12, color='red', transform=plt.gcf().transFigure, verticalalignment='top', ha='left')
+        plt.text(0.05, 0.85, f'Below expected average by: {abs(difference)}', fontsize=12, color='red', transform=plt.gcf().transFigure, verticalalignment='top', ha='left')
     else:
         plt.text(0.05, 0.85, f'On track', fontsize=12, color='black', transform=plt.gcf().transFigure, verticalalignment='top', ha='left')
 
