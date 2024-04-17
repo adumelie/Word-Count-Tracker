@@ -61,6 +61,8 @@ def calculate_average(data):
     
     return total_changes / total_days if total_days > 0 else 0
 
+    dates = [datetime.strptime(date, "%d-%m-%Y") for date in data.keys()]
+
 def plot_word_count(data):
     dates = [datetime.strptime(date, "%d-%m-%Y") for date in data.keys()]
     word_counts = list(data.values())
@@ -100,24 +102,44 @@ def plot_word_count(data):
     average = calculate_average(data)
     plt.text(0.05, 0.95, f'Average change per day: {average:.2f}', fontsize=14, transform=plt.gcf().transFigure, verticalalignment='top', ha='left')
 
+    # Calculate and add label for daily average to reach expected goal
+    target_word_count = 500 * 40
+    days_left = (datetime.strptime("20-05-2024", "%d-%m-%Y") - datetime.now()).days
+    if days_left > 0:
+        daily_average_needed = (target_word_count - word_counts[-1]) / days_left
+        plt.text(0.05, 0.9, f'Daily average needed to finish: {daily_average_needed:.2f}', fontsize=12, color='black', transform=plt.gcf().transFigure, verticalalignment='top', ha='left')
+
 
     # Calculate and add label for remaining days until May 20th
-    days_left_20 = (datetime.strptime("20-05-2024", "%d-%m-%Y") - datetime.now()).days
-    plt.text(0.05, 0.9, f'Days until 20/5: ', fontsize=12, color='black', transform=plt.gcf().transFigure, verticalalignment='top', ha='left')
-    plt.text(0.21, 0.9, f'{days_left_20}', fontsize=14, color='black', transform=plt.gcf().transFigure, verticalalignment='top', ha='left')
+    days_left_20 = days_left
+    plt.text(0.85, 0.95, f'Days until 20/5: ', fontsize=12, color='black', transform=plt.gcf().transFigure, verticalalignment='top', ha='right')
+    plt.text(0.90, 0.95, f'{days_left_20}', fontsize=14, color='black', transform=plt.gcf().transFigure, verticalalignment='top', ha='right')
 
     # Calculate and add label for remaining days until May 30th
     days_left_30 = (datetime.strptime("30-05-2024", "%d-%m-%Y") - datetime.now()).days
-    plt.text(0.05, 0.85, f'Days until 30/5: ', fontsize=12, color='black', transform=plt.gcf().transFigure, verticalalignment='top', ha='left')
-    plt.text(0.21, 0.85, f'{days_left_30}', fontsize=14, color='red', transform=plt.gcf().transFigure, verticalalignment='top', ha='left')
+    plt.text(0.85, 0.9, f'Days until 30/5: ', fontsize=12, color='black', transform=plt.gcf().transFigure, verticalalignment='top', ha='right')
+    plt.text(0.90, 0.9, f'{days_left_30}', fontsize=14, color='red', transform=plt.gcf().transFigure, verticalalignment='top', ha='right')
+
+    # Calculate expected progression
+    current_expected = (datetime.now() - start_date).days * (target_word_count / (end_date - start_date).days)
+
+    # Calculate the difference from today's expected value
+    difference = round(data[current_day] - current_expected)
+
+    # Add label for the difference
+    if difference > 0:
+        plt.text(0.05, 0.85, f'Above expected by: {difference}', fontsize=12, color='green', transform=plt.gcf().transFigure, verticalalignment='top', ha='left')
+    elif difference < 0:
+        plt.text(0.05, 0.85, f'Below expected by: {abs(difference)}', fontsize=12, color='red', transform=plt.gcf().transFigure, verticalalignment='top', ha='left')
+    else:
+        plt.text(0.05, 0.85, f'On track', fontsize=12, color='black', transform=plt.gcf().transFigure, verticalalignment='top', ha='left')
 
     # Add some spacing
-    plt.subplots_adjust(top=0.75, bottom=0.2)
+    plt.subplots_adjust(top=0.75, bottom=0.4)
 
     # Add expected progression lines
     expected_end_date = datetime.strptime("20-05-2024", "%d-%m-%Y")
     total_days = (expected_end_date - start_date).days
-    target_word_count = 500 * 40
 
     expected_word_count = [(idx / total_days) * target_word_count for idx, date in enumerate(date_range) if date <= datetime.strptime("20-05-2024", "%d-%m-%Y")]
     plt.plot([date for date in date_range if date <= datetime.strptime("20-05-2024", "%d-%m-%Y")], expected_word_count, linestyle='--', color='green', label='Expected Progression')
