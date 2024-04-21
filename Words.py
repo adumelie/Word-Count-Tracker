@@ -77,8 +77,14 @@ def plot_word_count(data):
 
     # Add current day's data to the plot
     current_day_datetime = datetime.strptime(current_day, "%d-%m-%Y")
-    dates.append(current_day_datetime)
-    word_counts.append(data[current_day])
+    # dates.append(current_day_datetime)
+    # word_counts.append(data[current_day])
+
+    # Calculate the difference between today's word count and yesterday's word count
+    if len(word_counts) >= 2:
+        daily_change = word_counts[-1] - word_counts[-2]
+    else:
+        daily_change = 0
 
     plt.figure(figsize=(10, 5))
     plt.plot(dates, word_counts, marker='o', linestyle='-', color='blue')  # Plot word counts
@@ -133,6 +139,9 @@ def plot_word_count(data):
         plt.text(0.05, 0.85, f'Below expected average by: {abs(difference)}', fontsize=12, color='red', transform=plt.gcf().transFigure, verticalalignment='top', ha='left')
     else:
         plt.text(0.05, 0.85, f'On track', fontsize=12, color='black', transform=plt.gcf().transFigure, verticalalignment='top', ha='left')
+
+    # Calculate and add label for daily change count
+    plt.text(0.05, 0.81, f'Today\'s daily change count: {daily_change}', fontsize=12, color='black', transform=plt.gcf().transFigure, verticalalignment='top', ha='left')
 
     # Add some spacing
     plt.subplots_adjust(top=0.75, bottom=0.4)
